@@ -35,7 +35,8 @@ jobs:
           echo "ALIAS=${{ secrets.ALIAS }}" >> release.properties
           VERSION_NAME=$(git describe --tags --abbrev=0)
           VERSION_NAME="${VERSION_NAME:1}"
-          echo "VERSION_NAME=${VERSION_NAME}" >> release.properties
+          bash ${GITHUB_WORKSPACE}/getBuildNumber.sh
+#          echo "VERSION_NAME=${VERSION_NAME}" >> release.properties
 
       - name: build release
         run: ./gradlew assembleRelease
