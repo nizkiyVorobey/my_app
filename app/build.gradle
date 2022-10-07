@@ -4,15 +4,37 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+Properties p = new Properties()
+p.load(new FileInputStream(rootProject.file('./release.properties')))
+
+
 android {
     compileSdk 32
+
+    signingConfigs {
+        release {
+            storeFile file(p.getProperty("KEYSTORE_PATH", "."))
+            storePassword p.getProperty("STORE_PASSWORD", ".")
+            keyAlias p.getProperty("ALIAS", ".")
+            keyPassword p.getProperty("KEY_PASSWORD", ".")
+
+        }
+
+        debug {
+            storeFile file('/Users/Oleksandr_Volkov4/AndroidStudioProjects/MyApplication/debug-keystore.jks')
+            storePassword "android"
+            keyAlias "debug"
+            keyPassword "android"
+        }
+    }
 
     defaultConfig {
         applicationId "com.senya.myapplication"
         minSdk 21
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        versionCode p["VERSION_CODE"]?.toInteger() ?: 1
+        versionName "0.0.1"
+        signingConfig signingConfigs.debug
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -21,9 +43,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+            debuggable true
+            applicationIdSuffix = ".debug"
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
