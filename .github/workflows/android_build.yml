@@ -27,24 +27,14 @@ jobs:
       - shell: bash
         run: echo "${{ secrets.KEYSTORE }}" | base64 -d > $GITHUB_WORKSPACE/upload-keystore.jks
 
-      - name: Bump version and push tag
-          uses: mathieudutour/github-tag-action@v6.0
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build Signed APK
         run: |
           echo "KEYSTORE_PATH=$GITHUB_WORKSPACE/upload-keystore.jks" > release.properties
           echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> release.properties
           echo "STORE_PASSWORD=${{secrets.STORE_PASSWORD}}" >> release.properties
           echo "ALIAS=${{ secrets.ALIAS }}" >> release.properties
-          echo "VERSION_NAME=${{  steps.previoustag.outputs.tag }}" >> release.properties
-          echo "LAST TAG: ${{  steps.tag_version.outputs.new_tag  }}"
-          echo "LAST TAG CHANGE LOG: ${{   steps.tag_version.outputs.changelog }}"
+          getBuildNumber.sh
 
-
-      #      - name: build release
-      #        run: ./gradlew app:bundleRelease
       - name: build release
         run: ./gradlew assembleRelease
 
