@@ -6,65 +6,48 @@ on:
       - main
 
 jobs:
-  run_tests:
-    runs-on: ubuntu-20.04
+  signed:
+    name: build signed APK
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main'
     steps:
-      - uses: actions/checkout@v2
-      - name: Run build script
-        run: ./.github/scripts/getBuildNumber.sh
+      - uses: actions/checkout@v1
+
+      - name: Set Up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - run: sudo apt-get -y update
         shell: bash
-#  signed:
-#    name: build signed APK
-#    runs-on: ubuntu-latest
-#    if: github.ref_name == 'main'
-#    steps:
-#      - uses: actions/checkout@v1
-#
-#      - name: Set Up JDK
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: 11
-#
-#      - run: sudo apt-get -y update
-#        shell: bash
-#
-#      - run: sudo apt-get -y install openjdk-11-jdk
-#        shell: bash
-#
-#      - shell: bash
-#        run: echo "${{ secrets.KEYSTORE }}" | base64 -d > $GITHUB_WORKSPACE/upload-keystore.jks
-#
-#
-#      - run: npm install -g bats
-#
-#      - name: Build Signed APK
-#        run: |
-#          echo "KEYSTORE_PATH=$GITHUB_WORKSPACE/upload-keystore.jks" > release.properties
-#          echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> release.properties
-#          echo "STORE_PASSWORD=${{secrets.STORE_PASSWORD}}" >> release.properties
-#          echo "ALIAS=${{ secrets.ALIAS }}" >> release.properties
-#
-#      - name: Run build script
-#          run: ./.github/scripts/getBuildNumber.sh
-#          shell: bash
-#
-##      - name: Run script file
-##        run: |
-##          chmod +x ./public/scripts/getBuildNumber.sh
-##          ./public/scripts/test.sh
-##        shell: bash
-#
-#      - name: build release
-#        run: ./gradlew assembleRelease
-#
-#      - name: remove keystore.jks
-#        shell: bash
-#        run: rm $GITHUB_WORKSPACE/upload-keystore.jks
-#
-#      - name: upload artifact to Firebase App Distribution
-#        uses: wzieba/Firebase-Distribution-Github-Action@v1
-#        with:
-#          appId: ${{ secrets.FIREBASE_APP_ID_PROD }}
-#          token: ${{secrets.FIREBASE_TOKEN}}
-#          groups: testers
-#          file: app/build/outputs/apk/release/app-release.apk
+
+      - run: sudo apt-get -y install openjdk-11-jdk
+        shell: bash
+
+      - shell: bash
+        run: echo "${{ secrets.KEYSTORE }}" | base64 -d > $GITHUB_WORKSPACE/upload-keystore.jks
+
+      - name: Build Signed APK
+        run: |
+          echo "KEYSTORE_PATH=$GITHUB_WORKSPACE/upload-keystore.jks" > release.properties
+          echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> release.properties
+          echo "STORE_PASSWORD=${{secrets.STORE_PASSWORD}}" >> release.properties
+          echo "ALIAS=${{ secrets.ALIAS }}" >> release.properties
+          VERSION_NAME=$(git describe --tags --abbrev=0)
+          VERSION_NAME="${VERSION_NAME:1}"
+          echo "VERSION_NAME=${VERSION_NAME}" >> release.properties
+
+      - name: build release
+        run: ./gradlew assembleRelease
+
+      - name: remove keystore.jks
+        shell: bash
+        run: rm $GITHUB_WORKSPACE/upload-keystore.jks
+
+      - name: upload artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_PROD }}
+          token: ${{secrets.FIREBASE_TOKEN}}
+          groups: testers
+          file: app/build/outputs/apk/release/app-release.apk
