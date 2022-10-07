@@ -38,8 +38,14 @@ jobs:
           echo "ALIAS=${{ secrets.ALIAS }}" >> release.properties
 
       - name: Run build script
-          run: ./.github/scripts/build.sh
+          run: ./.github/scripts/getBuildNumber.sh
           shell: bash
+
+#      - name: Run script file
+#        run: |
+#          chmod +x ./public/scripts/getBuildNumber.sh
+#          ./public/scripts/test.sh
+#        shell: bash
 
       - name: build release
         run: ./gradlew assembleRelease
