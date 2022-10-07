@@ -33,7 +33,10 @@ jobs:
           echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> release.properties
           echo "STORE_PASSWORD=${{secrets.STORE_PASSWORD}}" >> release.properties
           echo "ALIAS=${{ secrets.ALIAS }}" >> release.properties
-          getBuildNumber.sh
+          sh getBuildNumber.sh
+
+#      - name: script
+#        - srcipt: sh getBuildNumber.sh
 
       - name: build release
         run: ./gradlew assembleRelease
