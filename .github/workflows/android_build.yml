@@ -35,7 +35,7 @@ jobs:
           echo "ALIAS=${{ secrets.ALIAS }}" >> release.properties
 
       - name: Run build script
-          run: ./getBuildNumber.sh
+          run: getBuildNumber.sh
           shell: bash
 
       - name: build release
