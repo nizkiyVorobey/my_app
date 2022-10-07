@@ -27,7 +27,6 @@ jobs:
       - shell: bash
         run: echo "${{ secrets.KEYSTORE }}" | base64 -d > $GITHUB_WORKSPACE/upload-keystore.jks
 
-
       - name: 'Get Previous tag'
           id: previoustag
           uses: "WyriHaximus/github-action-get-previous-tag@v1"
