@@ -27,6 +27,9 @@ jobs:
       - shell: bash
         run: echo "${{ secrets.KEYSTORE }}" | base64 -d > $GITHUB_WORKSPACE/upload-keystore.jks
 
+
+      - run: npm install -g bats
+
       - name: Build Signed APK
         run: |
           echo "KEYSTORE_PATH=$GITHUB_WORKSPACE/upload-keystore.jks" > release.properties
@@ -35,7 +38,7 @@ jobs:
           echo "ALIAS=${{ secrets.ALIAS }}" >> release.properties
 
       - name: Run build script
-          run: ./getBuildNumber.sh
+          run: ./.github/scripts/build.sh
           shell: bash
 
       - name: build release
