@@ -43,14 +43,21 @@ jobs:
         shell: bash
         run: rm $GITHUB_WORKSPACE/upload-keystore.jks
 
-      - name: Deploy to Alpha
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJson: service_account.json
-          packageName: com.jshvarts.flows
-          releaseFile: app/build/outputs/bundle/release/app-release.aab
-          track: alpha
-          whatsNewDirectory: distribution/
+          serviceAccountJsonPlainText: ${{ SERVICE_ACCOUNT_JSON }}
+          packageName: com.example.MyApp
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          track: Production
+
+#      - name: Deploy to Alpha
+#        uses: r0adkll/upload-google-play@v1
+#        with:
+#          serviceAccountJson: service_account.json
+#          packageName: com.jshvarts.flows
+#          releaseFile: app/build/outputs/bundle/release/app-release.aab
+#          track: alpha
+#          whatsNewDirectory: distribution/
 
 #      - name: upload artifact to Firebase App Distribution
 #        uses: wzieba/Firebase-Distribution-Github-Action@v1
